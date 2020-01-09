@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('物资管理列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <p>物资编号：</p>
+                                <input type="text" name="id"/>
+                            </li>
+                            <li>
+                                <p>名称：</p>
+                                <input type="text" name="name"/>
+                            </li>
+
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <!--<a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="materialsBusiness:materialsBusiness:add">-->
+                    <!--<i class="fa fa-plus"></i> 新增-->
+                <!--</a>-->
+                <!--<a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="materialsBusiness:materialsBusiness:edit">-->
+                    <!--<i class="fa fa-edit"></i> 修改-->
+                <!--</a>-->
+                <!--<a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="materialsBusiness:materialsBusiness:remove">-->
+                    <!--<i class="fa fa-remove"></i> 删除-->
+                <!--</a>-->
+                <!--<a class="btn btn-info" onclick="$.table.importExcel()" shiro:hasPermission="warehouseBusiness:warehouseBusiness:import">-->
+                    <!--<i class="fa fa-upload"></i> 导入-->
+                <!--</a>-->
+                <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="materialsBusiness:materialsBusiness:export">-->
+                    <!--<i class="fa fa-download"></i> 导出-->
+                 <!--</a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table" data-mobile-responsive="true"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('materialsBusiness:materialsBusiness:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('materialsBusiness:materialsBusiness:remove')}]];
+        var detailFlag = [[${@permission.hasPermi('materialsBusiness:materialsBusiness:detail')}]];
+
+        var deliveryFlag = [[${@permission.hasPermi('materialsBusiness:materialsBusiness:delivery')}]];
+        var unitDatas = [[${@dict.getType('tb_ materials_unit')}]];
+        var unitsDatas = [[${@dict.getType('tb_ materials_units')}]];
+        var prefix = ctx + "materialsBusiness/materialsBusiness";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                detailUrl:prefix + "/detail/{id}",
+                importUrl: prefix + "/importData",
+                importTemplateUrl: prefix + "/importTemplate",
+                modalName: "库存",
+                columns: [
+                //     {
+                //     checkbox: true
+                // },
+                {
+                    field : 'id', 
+                    title : '物资编号'
+                },
+                {
+                    field : 'name', 
+                    title : '名称'
+                },
+                {
+                    field : 'amount', 
+                    title : '库存'
+                },
+                {
+                    field : 'updateTime',
+                    title : '更新时间'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        // actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<button type="button" class="btn btn-primary btn-xs ' + deliveryFlag + '" href="javascript:void(0)" onclick="delivery('+row.id+','+row.amount+','+2+')" ><i class="fa fa-edit"></i>出库</button>');
+                        actions.push('<button type="button" class="btn btn-danger btn-xs ' + deliveryFlag + '" href="javascript:void(0)" onclick="delivery('+row.id+','+row.amount+','+3+')" ><i class="fa fa-edit"></i>报废</button>');
+                        actions.push('<a class="btn btn-warning btn-xs ' + detailFlag + '" href="javascript:void(0)" onclick="detail(\'' + row.id + '\')"><i class="fa fa-search"></i>详情</a> ');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+        /*出入库列表-详细*/
+        function detail(detailId) {
+            var url = '/materialsDetailBusiness/materialsDetailBusiness/detail/'  + detailId;
+            $.modal.openTab("库存变动详情", url);
+        }
+
+
+        var click= new Audio(ctx+"click.wav")
+        function delivery(id,curAmount,type) {
+            var title=''
+            if(type==2){
+                title='请输入出库数量'
+            }else if(type==3){
+                title='请输入报废数量'
+            }
+            layer.prompt({title:title , formType: 3}, function(amount, index){
+                var reg=/^\+?[1-9][0-9]*$/
+                if(reg.test(amount)){
+                    if(curAmount-amount>=0) {
+                        $.operate.post(prefix + "/delivery", {"id": id, "amount": amount,"type":type},function (res) {
+                            location.href=ctx+"bill/bill/getBill?redis=1"
+                        })
+
+                        click.play()
+                        // window.open(ctx+"bill/bill/getBill?redis=1","_blank","height=400px","width=600px");
+                        // $.modal.open("凭条", ctx+"bill/bill/getBill?redis=1");
+                        // location.href=ctx+"bill/bill/getBill?redis=1"
+
+                    }else {
+                        layer.msg('库存不足' );
+                    }
+                    layer.close(index);
+                }else {
+                    layer.msg('操作失败，请输入大于0的整数');
+                }
+
+            });
+        }
+        function checkAmount(id,amount) {
+            var flag=false
+            Boolean
+            $.ajax({
+                url:ctx+'materialsDetailBusiness/materialsDetailBusiness/checkAmount',
+                type:'post',
+                async : true,
+                data:{"materialsId":id,"amount":amount},
+                success:function (res) {
+                    flag=new Boolean(res)
+                    console.log(typeof res)
+                }
+            })
+            return flag
+        }
+    </script>
+     <script id="importTpl" type="text/template">
+         <form enctype="multipart/form-data" class="mt20 mb10">
+             <div class="col-xs-offset-1">
+                 <input type="file" id="file" name="file"/>
+                 <div class="mt10 pt5">
+                     <!--<input type="checkbox" id="updateSupport" name="updateSupport" title="如果登录账户已经存在，更新这条数据。"> 是否更新已经存在的用户数据-->
+                     &nbsp;	<a onclick="$.table.importTemplate()" class="btn btn-default btn-xs"><i class="fa fa-file-excel-o"></i> 下载模板</a>
+                 </div>
+                 <font color="red" class="pull-left mt10">
+                     提示：仅允许导入“xls”或“xlsx”格式文件！
+                 </font>
+             </div>
+         </form>
+     </script>
+</body>
+</html>

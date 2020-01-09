@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mi.tbPurchaseBusiness.mapper.TbPurchaseMapper">
+    
+    <resultMap type="TbPurchase" id="TbPurchaseResult">
+        <result property="id"    column="id"    />
+        <result property="planId"    column="plan_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="exigency"    column="exigency"    />
+        <result property="remark"    column="remark"    />
+        <result property="status"    column="status"    />
+        <result property="paymentState"    column="payment_state"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectTbPurchaseVo">
+        select id, user_id, plan_id,exigency, remark, status, payment_state, update_time, create_time from tb_purchase
+    </sql>
+
+    <select id="selectTbPurchaseList" parameterType="TbPurchase" resultMap="TbPurchaseResult">
+        <include refid="selectTbPurchaseVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="planId != null "> and plan_id = #{planId}</if>
+            <if test="exigency != null "> and exigency = #{exigency}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="paymentState != null "> and payment_state = #{paymentState}</if>
+        </where>
+        group by id desc
+    </select>
+
+    <select id="selectTbPurchaseById" parameterType="Integer" resultMap="TbPurchaseResult">
+        <include refid="selectTbPurchaseVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTbPurchase" parameterType="TbPurchase" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_purchase
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">user_id,</if>
+            <if test="planId != null ">plan_id,</if>
+            <if test="exigency != null ">exigency,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="status != null ">status,</if>
+            <if test="paymentState != null ">payment_state,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="createTime != null ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">#{userId},</if>
+            <if test="planId != null ">#{planId},</if>
+            <if test="exigency != null ">#{exigency},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="status != null ">#{status},</if>
+            <if test="paymentState != null ">#{paymentState},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="createTime != null ">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbPurchase" parameterType="TbPurchase">
+        update tb_purchase
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null ">user_id = #{userId},</if>
+            <if test="planId != null ">plan_id = #{planId},</if>
+            <if test="exigency != null ">exigency = #{exigency},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="status != null ">status = #{status},</if>
+            <if test="paymentState != null ">payment_state = #{paymentState},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTbPurchaseById" parameterType="Integer">
+        delete from tb_purchase where id = #{id}
+    </delete>
+
+    <delete id="deleteTbPurchaseByIds" parameterType="String">
+        delete from tb_purchase where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteTbPurchaseByPlanIds" parameterType="String">
+        delete from tb_purchase where plan_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

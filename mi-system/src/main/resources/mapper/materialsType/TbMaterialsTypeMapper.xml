@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mi.materialsType.mapper.TbMaterialsTypeMapper">
+    
+    <resultMap type="TbMaterialsType" id="TbMaterialsTypeResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectTbMaterialsTypeVo">
+        select id, name, update_time, create_time from tb_materials_type
+    </sql>
+
+    <select id="selectTbMaterialsTypeList" parameterType="TbMaterialsType" resultMap="TbMaterialsTypeResult">
+        <include refid="selectTbMaterialsTypeVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectTbMaterialsTypeById" parameterType="Integer" resultMap="TbMaterialsTypeResult">
+        <include refid="selectTbMaterialsTypeVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTbMaterialsType" parameterType="TbMaterialsType" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_materials_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null  and name != ''">name,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="createTime != null ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="createTime != null ">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbMaterialsType" parameterType="TbMaterialsType">
+        update tb_materials_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTbMaterialsTypeById" parameterType="Integer">
+        delete from tb_materials_type where id = #{id}
+    </delete>
+
+    <delete id="deleteTbMaterialsTypeByIds" parameterType="String">
+        delete from tb_materials_type where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('采购计划列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <p>采购编号：</p>
+                                <input type="text" name="id"/>
+                            </li>
+                            <li>
+                                <p>采购员编号：</p>
+                                <input type="text" name="userId"/>
+                            </li>
+                            <li>
+                                <p>物资编号：</p>
+                                <input type="text" name="materialsId"/>
+                            </li>
+                            <li>
+                                <p>紧急：</p>
+                                <select name="exigency" th:with="type=${@dict.getType('tb_purchase_exigency')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <p>状态：</p>
+                                <select name="status" th:with="type=${@dict.getType('tb_purchase_status')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <!--<li>-->
+                                <!--<p>支付状态：</p>-->
+                                <!--<select name="paymentState" th:with="type=${@dict.getType('tb_purchase_payment_state')}">-->
+                                    <!--<option value="">所有</option>-->
+                                    <!--<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>-->
+                                <!--</select>-->
+                            <!--</li>-->
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="tbPurchaseBusiness:tbPurchaseBusiness:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="tbPurchaseBusiness:tbPurchaseBusiness:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="tbPurchaseBusiness:tbPurchaseBusiness:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="tbPurchaseBusiness:tbPurchaseBusiness:export">
+                    <i class="fa fa-download"></i> 导出
+                 </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table" data-mobile-responsive="true"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('tbPurchaseBusiness:tbPurchaseBusiness:edit')}]];
+        var acceptFlag = [[${@permission.hasPermi('tbPurchaseBusiness:tbPurchaseBusiness:accept')}]];
+        var removeFlag = [[${@permission.hasPermi('tbPurchaseBusiness:tbPurchaseBusiness:remove')}]];
+        var exigencyDatas = [[${@dict.getType('tb_purchase_exigency')}]];
+        var statusDatas = [[${@dict.getType('tb_purchase_status')}]];
+        var paymentStateDatas = [[${@dict.getType('tb_purchase_payment_state')}]];
+        var acceptFlag = [[${@permission.hasPermi('tbPurchaseBusiness:tbPurchaseBusiness:accept')}]];
+
+        var prefix = ctx + "tbPurchaseBusiness/tbPurchaseBusiness";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "采购计划",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field : 'id', 
+                    title : '采购编号',
+                },
+                {
+                    field : 'userId', 
+                    title : '采购员编号'
+                },
+                {
+                    field : 'buyer.userName',
+                    title : '采购员'
+                },
+                {
+                    field : 'planId',
+                    title : '需求编号'
+                },
+                {
+                    field : 'tbRequirementsPlan.amount',
+                    title : '数量'
+                },
+                {
+                    field : 'tbRequirementsPlan.tbmaterials.name',
+                    title : '商品名',
+                    formatter: function(value, row, index) {
+                        return empty(row.tbRequirementsPlan.tbmaterials.name);
+                    }
+                },
+                {
+                    field : 'exigency', 
+                    title : '紧急',
+                    formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(exigencyDatas, value);
+                    }
+                },
+
+                {
+                    field : 'status', 
+                    title : '状态',
+                    formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(statusDatas, value);
+                    }
+                },
+                {
+                    field : 'updateTime', 
+                    title : '更新时间'
+                },
+                {
+                    field : 'createTime', 
+                    title : '创建时间'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push(getStatusBtn(row.id,row.status,empty(row.tbRequirementsPlan.tbmaterials.id),row.tbRequirementsPlan.amount,row.tbRequirementsPlan.id));
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(' + row.id + ')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+        function empty(value) {
+            if(value==undefined|value==null){
+                return ''
+            }else {
+                return value
+            }
+        }
+        /**
+         * 
+         * 
+        */
+        // function getEditBtn(id,status) {
+        //     if(status==1){
+        //         return
+        //     }else if (status==0) {
+        //         return '<a class="btn btn-warning btn-xs ' + acceptFlag + '" href="javascript:void(0)" onclick="statusBtn('+id+','+status+')"><i class="fa fa-edit"></i>验收</a> '
+        //     }
+        // }
+        
+        
+        /**
+         * 验收,退回按钮显示
+         * @param id 采购编号,status 状态,materialsId 物资编号,amount 采购数量
+         */
+        function getStatusBtn(id,status,materialsId,amount,planId) {
+            if(status==0){
+                return '<a class="btn btn-warning btn-xs ' + acceptFlag + '" href="javascript:void(0)" onclick="statusBtn('+id+','+status+','+materialsId+','+amount+','+planId+')"><i class="fa fa-edit"></i>验收</a> '
+            }
+            else if(status==1) {
+                return '<a class="btn btn-danger btn-xs btn-xs ' + acceptFlag + '" href="javascript:void(0)" onclick="statusBtn('+id+','+status+','+materialsId+','+amount+','+planId+')"><i class="fa fa-edit"></i>退回</a> '
+
+            }else if(status==2){
+                return '<a class="btn btn-warning btn-xs ' + acceptFlag + '" href="javascript:void(0)" onclick="statusBtn('+id+','+status+','+materialsId+','+amount+','+planId+')"><i class="fa fa-edit"></i>验收</a> '
+            }
+        }
+        /**
+         * 验收按钮操作
+         * @param id 采购编号,status 状态,materialsId 物资编号,amount 采购数量
+         */
+        function statusBtn(id,status,materialsId,amount,planId) {
+            var put
+            var url=prefix+"/accept"
+            var msg;
+            if(status==0){
+                 msg="确认要验收这批货物么吗?"
+                status=1
+                put=new Audio(ctx+"put.mp3")
+            }
+            else if(status==1){
+                msg="确认要退回这批货物么吗?"
+                status=2
+                put=new Audio(ctx+"putBack.mp3")
+            }
+            else if(status==2){
+                status=1
+                msg="确认要再验收这批货物么吗?"
+                put=new Audio(ctx+"put.mp3")
+
+            }
+            $.modal.confirm(msg, function() {
+                $.operate.submit(url, "post", "json", {"id":id,"status":status,"materialsId":materialsId,"amount":amount,"planId":planId},function (res) {
+                    location.href=ctx+"bill/bill/getBill?redis=1"
+                });
+                put.play()
+            });
+        }
+    </script>
+</body>
+</html>

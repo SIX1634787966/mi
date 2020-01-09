@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改仓库管理')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-warehouseBusiness-edit" th:object="${tbWarehouse}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">仓库名称：</label>
+                <div class="col-sm-8">
+                    <input name="name" th:field="*{name}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">电话：</label>
+                <div class="col-sm-8">
+                    <input name="phone" th:field="*{phone}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">仓库地址：</label>
+                <div class="col-sm-8">
+                    <input name="address" th:field="*{address}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">负责人：</label>
+                <div class="col-sm-8">
+                    <input name="president" th:field="*{president}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">邮箱：</label>
+                <div class="col-sm-8">
+                    <input name="email" th:field="*{email}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">状态：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('tb_warehouse_status')}">
+                        <input type="radio" th:id="${'status_' + dict.dictCode}" name="status" th:value="${dict.dictValue}" th:field="*{status}">
+                        <label th:for="${'status_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">面积m²：</label>
+                <div class="col-sm-8">
+                    <input name="area" th:field="*{area}" class="form-control" type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">可用：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('tb_warehoouse_isFull')}">
+                        <input type="radio" th:id="${'isfull_' + dict.dictCode}" name="isfull" th:value="${dict.dictValue}" th:field="*{isfull}">
+                        <label th:for="${'isfull_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <textarea id="remark" th:field="*{remark}" name="remark" class="form-control"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "warehouseBusiness/warehouseBusiness";
+        $("#form-warehouseBusiness-edit").validate({
+            onkeyup: false,
+            rules:{
+                email:{
+                    email:true
+                },
+                phone:{
+                    isPhone:true
+                },
+                area:{
+                    number:true,
+                    min:0
+                }
+            },
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-warehouseBusiness-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

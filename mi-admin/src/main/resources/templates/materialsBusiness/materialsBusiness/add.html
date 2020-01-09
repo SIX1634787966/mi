@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增物资管理')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-materialsBusiness-add">
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">供应商：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text" onclick="selectSupplierTree()" id="supplierName" name="supplierName" readonly="true"  required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">供应商编号：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text"  id="supplierId" name="supplierId" readonly="true"  required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">类型名：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text" onclick="selectTypeTree()" id="typeName" name="typeName" readonly="true"  required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">类型编号：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text"  id="typeId" name="typeId" readonly="true"  required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">仓库：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text" onclick="selectWarehouseTree()" id="warehouseName" name="warehouseName" readonly="true" required >
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">仓库编号：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text"  id="warehouseId" name="warehouseId" readonly="true"  required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">款号：</label>
+                <div class="col-sm-8">
+                    <input name="styleNumber" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">名称：</label>
+                <div class="col-sm-8">
+                    <input name="name" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">产地：</label>
+                <div class="col-sm-8">
+                    <input name="originSource" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">规格：</label>
+                <div class="col-sm-8">
+                    <input name="specification" class="form-control" type="text" required>
+                </div>
+            </div>
+            <!--<div class="form-group">    -->
+                <!--<label class="col-sm-3 control-label">数量：</label>-->
+                <!--<div class="col-sm-8">-->
+                    <!--<input name="amount" class="form-control" type="text" value="0" readonly="readonly" required>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">质量：</label>
+                <div class="col-sm-8">
+                    <input name="quality" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">质量单位：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('tb_ materials_unit')}">
+                        <input type="radio" th:id="${'unit_' + dict.dictCode}" name="unit" th:value="${dict.dictValue}" th:checked="${dict.default}">
+                        <label th:for="${'unit_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">单位：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('tb_ materials_units')}">
+                        <input type="radio" th:id="${'unit_' + dict.dictCode}" name="units" th:value="${dict.dictValue}" th:checked="${dict.default}">
+                        <label th:for="${'unit_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">入库价：</label>
+                <div class="col-sm-8">
+                    <input name="putPrice" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">出库价：</label>
+                <div class="col-sm-8">
+                    <input name="deliveryPrice" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <textarea id="remark" name="remark" class="form-control"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "materialsBusiness/materialsBusiness"
+        $("#form-materialsBusiness-add").validate({
+            onkeyup: false,
+            rules:{
+                deliveryPrice:{
+                    number:true,
+                    min:0
+                },
+                putPrice:{
+                    number:true,
+                    min:0
+                },
+                quality:{
+                    number:true,
+                    min:0
+                },
+            },
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-materialsBusiness-add').serialize());
+            }
+        }
+        /*物资管理-新增-选择菜单树*/
+        function selectTypeTree() {
+            //  var menuId = treeId > 0 ? treeId : 1;
+            var url = ctx + "materialsType/materialsType/materialsTypeTree"
+            var options = {
+                title: '物资类型选择',
+                width: "380",
+                url: url,
+                callBack: TypeDoSubmit
+            };
+            $.modal.openOptions(options);
+        }
+        function TypeDoSubmit(index, layero){
+            var body = layer.getChildFrame('body', index);
+            $("#typeId").val(body.find('#treeId').val());
+            $("#typeName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+        /*物资管理-新增-选择菜单树*/
+        function selectWarehouseTree() {
+            //  var menuId = treeId > 0 ? treeId : 1;
+            var url = prefix + "/warehouseTree"
+            var options = {
+                title: '存储仓库选择',
+                width: "380",
+                url: url,
+                callBack: WarehouseDoSubmit
+            };
+            $.modal.openOptions(options);
+        }
+        function WarehouseDoSubmit(index, layero){
+            var body = layer.getChildFrame('body', index);
+            $("#warehouseId").val(body.find('#treeId').val());
+            $("#warehouseName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+        /*供应商管理-新增-选择菜单树*/
+        function selectSupplierTree() {
+            //  var menuId = treeId > 0 ? treeId : 1;
+            var url = ctx + "tbPurchaseBusiness/tbPurchaseBusiness" + "/supplierTree"
+            var options = {
+                title: '供应商选择',
+                width: "380",
+                url: url,
+                callBack: supplierDoSubmit
+            };
+            $.modal.openOptions(options);
+        }
+        function supplierDoSubmit(index, layero){
+            var body = layer.getChildFrame('body', index);
+            $("#supplierId").val(body.find('#treeId').val());
+            $("#supplierName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+
+    </script>
+</body>
+</html>

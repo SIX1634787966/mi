@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mi.materialsBusiness.mapper.TbmaterialsMapper">
+    
+    <resultMap type="Tbmaterials" id="TbmaterialsResult">
+        <result property="id"    column="ID"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="styleNumber"    column="style_number"    />
+        <result property="name"    column="name"    />
+        <result property="originSource"    column="origin_source"    />
+        <result property="specification"    column="specification"    />
+        <result property="amount"    column="amount"    />
+        <result property="quality"    column="quality"    />
+        <result property="unit"    column="unit"    />
+        <result property="putPrice"    column="put_price"    />
+        <result property="deliveryPrice"    column="delivery_price"    />
+        <result property="remark"    column="remark"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="units"    column="units"    />
+        <result property="typeId"    column="type_id"    />
+    </resultMap>
+
+    <sql id="selectTbmaterialsVo">
+        select ID, supplier_id, type_id,units,warehouse_id, style_number, name, origin_source, specification, amount, quality, unit, put_price, delivery_price, remark, update_time, create_time from tb_materials
+    </sql>
+
+    <select id="selectTbmaterialsList" parameterType="Tbmaterials" resultMap="TbmaterialsResult">
+        <include refid="selectTbmaterialsVo"/>
+        <where>  
+            <if test="id != null "> and ID = #{id}</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="styleNumber != null  and styleNumber != ''"> and style_number = #{styleNumber}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="originSource != null  and originSource != ''"> and origin_source = #{originSource}</if>
+        </where>
+        group by id desc
+    </select>
+    <select id="selectMaterialsTree" parameterType="Integer" resultMap="TbmaterialsResult">
+        select ID, name from tb_materials
+    </select>
+    <select id="selectTbmaterialsById" parameterType="Integer" resultMap="TbmaterialsResult">
+        <include refid="selectTbmaterialsVo"/>
+        where ID = #{id}
+    </select>
+        
+    <insert id="insertTbmaterials" parameterType="Tbmaterials" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_materials
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="supplierId != null ">supplier_id,</if>
+            <if test="warehouseId != null ">warehouse_id,</if>
+            <if test="typeId != null ">type_id,</if>
+            <if test="styleNumber != null  and styleNumber != ''">style_number,</if>
+            <if test="name != null  and name != ''">name,</if>
+            <if test="originSource != null  and originSource != ''">origin_source,</if>
+            <if test="specification != null  and specification != ''">specification,</if>
+            <if test="amount != null ">amount,</if>
+            <if test="quality != null ">quality,</if>
+            <if test="unit != null ">unit,</if>
+            <if test="putPrice != null ">put_price,</if>
+            <if test="deliveryPrice != null ">delivery_price,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="units != null ">units,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="createTime != null ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="supplierId != null ">#{supplierId},</if>
+            <if test="warehouseId != null ">#{warehouseId},</if>
+            <if test="typeId != null ">#{typeId},</if>
+            <if test="styleNumber != null  and styleNumber != ''">#{styleNumber},</if>
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="originSource != null  and originSource != ''">#{originSource},</if>
+            <if test="specification != null  and specification != ''">#{specification},</if>
+            <if test="amount != null ">#{amount},</if>
+            <if test="quality != null ">#{quality},</if>
+            <if test="unit != null ">#{unit},</if>
+            <if test="putPrice != null ">#{putPrice},</if>
+            <if test="deliveryPrice != null ">#{deliveryPrice},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="units != null ">#{units},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="createTime != null ">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbmaterials" parameterType="Tbmaterials">
+        update tb_materials
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="typeId != null ">type_id = #{typeId},</if>
+            <if test="supplierId != null ">supplier_id = #{supplierId},</if>
+            <if test="warehouseId != null ">warehouse_id = #{warehouseId},</if>
+            <if test="styleNumber != null  and styleNumber != ''">style_number = #{styleNumber},</if>
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="originSource != null  and originSource != ''">origin_source = #{originSource},</if>
+            <if test="specification != null  and specification != ''">specification = #{specification},</if>
+            <if test="amount != null ">amount = #{amount},</if>
+            <if test="quality != null ">quality = #{quality},</if>
+            <if test="unit != null ">unit = #{unit},</if>
+            <if test="putPrice != null ">put_price = #{putPrice},</if>
+            <if test="deliveryPrice != null ">delivery_price = #{deliveryPrice},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="units != null  and remark != ''">units = #{units},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteTbmaterialsById" parameterType="Integer">
+        delete from tb_materials where ID = #{id}
+    </delete>
+
+    <delete id="deleteTbmaterialsByIds" parameterType="String">
+        delete from tb_materials where ID in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

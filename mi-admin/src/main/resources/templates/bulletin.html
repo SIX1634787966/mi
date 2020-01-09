@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统计</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link href="../static/css/font-awesome.min.css" th:href="@{/css/font-awesome.min.css}" rel="stylesheet"/>
+    <link href="../static/css/main/animate.min.css" th:href="@{/css/main/animate.min.css}" rel="stylesheet"/>
+    <link href="../static/css/main/style.min862f.css" th:href="@{/css/main/style.min862f.css}" rel="stylesheet"/>
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <span class="label label-success pull-right">本月</span>
+                        <h5>收入</h5>
+                    </div>
+                    <div class="ibox-content" id="monthBulletin">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <span class="label label-success pull-right">本月</span>
+                        <h5>采购总额(入库价)</h5>
+                    </div>
+                    <div class="ibox-content" id="monthPutBulletin">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <span class="label label-success pull-right">本月</span>
+                        <h5>出库总额(出库价)</h5>
+                    </div>
+                    <div class="ibox-content" id="monthDeliveryBulletin">
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <span class="label label-success pull-right">本月</span>
+                        <h5>出入库次数</h5>
+                    </div>
+                    <div class="ibox-content" id="thisMonthCount">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!--<div class="row">-->
+            <!--<div class="col-sm-12">-->
+                <!--<div class="ibox float-e-margins">-->
+                    <!--<div class="ibox-title">-->
+                        <!--<h5>订单</h5>-->
+                        <!--&lt;!&ndash;<div class="pull-right">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="btn-group">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<button type="button" class="btn btn-xs btn-white active">天</button>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<button type="button" class="btn btn-xs btn-white">本月</button>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<button type="button" class="btn btn-xs btn-white">年</button>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                    <!--</div>-->
+                    <!--<div class="ibox-content">-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-sm-9">-->
+                                <!--<div class="flot-chart">-->
+                                    <!--<div class="flot-chart-content" id="flot-dashboard-chart"></div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="col-sm-3">-->
+                                <!--<ul class="stat-list">-->
+                                    <!--<li>-->
+                                        <!--<h2 class="no-margins">2,346</h2>-->
+                                        <!--<small>订单总数</small>-->
+                                        <!--<div class="stat-percent">48% <i class="fa fa-level-up text-navy"></i>-->
+                                        <!--</div>-->
+                                        <!--<div class="progress progress-mini">-->
+                                            <!--<div style="width: 48%;" class="progress-bar"></div>-->
+                                        <!--</div>-->
+                                    <!--</li>-->
+                                    <!--<li>-->
+                                        <!--<h2 class="no-margins ">4,422</h2>-->
+                                        <!--<small>最近一个本月订单</small>-->
+                                        <!--<div class="stat-percent">60% <i class="fa fa-level-down text-navy"></i>-->
+                                        <!--</div>-->
+                                        <!--<div class="progress progress-mini">-->
+                                            <!--<div style="width: 60%;" class="progress-bar"></div>-->
+                                        <!--</div>-->
+                                    <!--</li>-->
+                                    <!--<li>-->
+                                        <!--<h2 class="no-margins ">9,180</h2>-->
+                                        <!--<small>最近一个本月销售额</small>-->
+                                        <!--<div class="stat-percent">22% <i class="fa fa-bolt text-navy"></i>-->
+                                        <!--</div>-->
+                                        <!--<div class="progress progress-mini">-->
+                                            <!--<div style="width: 22%;" class="progress-bar"></div>-->
+                                        <!--</div>-->
+                                    <!--</li>-->
+                                 <!--</ul>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>最新出库列表</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <table class="table table-hover no-margins">
+                            <thead>
+                                <tr>
+                                    <th>状态</th>
+                                    <th>商品</th>
+                                    <th>价值</th>
+                                    <th>时间</th>
+                                </tr>
+                            </thead>
+                            <tbody id="delivery">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+         </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>最新入库列表</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <table class="table table-hover no-margins">
+                            <thead>
+                            <tr>
+                                <th>状态</th>
+                                <th>商品</th>
+                                <th>价值</th>
+                                <th>时间</th>
+                            </tr>
+                            </thead>
+                            <tbody id="put">
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/ajax/libs/flot/jquery.flot.js}"></script>
+    <script th:inline="javascript"> var ctx = [[@{/}]]; </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            bulletin()
+            getNews()
+	    });
+
+        function bulletin() {
+            $.ajax({
+                url:ctx+'bulletin',
+                dataType:'json',
+                success:function (res) {
+                    thisMonthBulletin(res.thisMonthBulletin,$("#monthBulletin"),"利润")
+                    monthPutBulletin(res.monthPutBulletin,$("#monthPutBulletin"),"支出总额")
+                    monthDeliveryBulletin(res.monthDeliveryBulletin,$("#monthDeliveryBulletin"),"收入总额")
+                    thisMonthCount(res.thisMonthCount,$("#thisMonthCount"),"单")
+                }
+            })
+        }
+
+        /**
+         * 计算本月收入
+         * @param data
+         * @param e
+         * @param title
+         */
+        function thisMonthBulletin(data,e,title) {
+
+            if(data==undefined){
+               e.append("<h1 class='no-margins'>"+0+"</h1>");
+               e.append("<div class='stat-percent font-bold text-success'>"+"上月收入:"+0 +"<i class='fa fa-bolt'></i></div>");
+               e.append("<small>"+title+"</small>")
+               return;
+           }
+            e.append("<h1 class='no-margins'>"+empty(data.profit)+"</h1>");
+            switch (empty(data.msgType)) {
+                case 0:
+                    //上
+                    e.append("<div class='stat-percent font-bold text-navy'>"+"上月收入:"+empty(data.lastProfit)+"<i class='fa fa-level-up'></i></div>");
+                    break;
+                case 1:
+                    //下
+                    e.append("<div class='stat-percent font-bold text-danger'>"+"上月收入:"+empty(data.lastProfit)+"<i class='fa fa-level-down'></i></div>");
+                    break;
+                case 2:
+                    e.append("<div class='stat-percent font-bold text-success'>"+"上月收入:"+empty(data.lastProfit)+"<i class='fa fa-bolt'></i></div>");
+                    break;
+            }
+            e.append("<small>"+title+"</small>")
+        }
+
+        /**
+         * 月度入库额数据
+         * @param data
+         * @param e
+         * @param title
+         */
+        function monthPutBulletin(data,e,title) {
+            if(data==undefined){
+                e.append("<h1 class='no-margins'>"+0+"</h1>");
+                e.append("<div class='stat-percent font-bold text-success'>"+"上月支出:"+0 +"<i class='fa fa-bolt'></i></div>");
+                e.append("<small>"+title+"</small>")
+                return;
+            }
+            e.append("<h1 class='no-margins'>"+empty(data.putPriceCount)+"</h1>");
+            switch (empty(data.msgType)) {
+                case 0:
+                    //上
+                    e.append("<div class='stat-percent font-bold text-navy'>"+"上月支出:"+empty(data.lastPutPriceCount)+"<i class='fa fa-level-up'></i></div>");
+                    break;
+                case 1:
+                    //下
+
+                    e.append("<div class='stat-percent font-bold text-danger'>"+"上月支出:"+empty(data.lastPutPriceCount)+"<i class='fa fa-level-down'></i></div>");
+                    break;
+                case 2:
+                    e.append("<div class='stat-percent font-bold text-success'>"+"上月支出:"+empty(data.lastPutPriceCount)+"<i class='fa fa-bolt'></i></div>");
+                    break;
+            }
+            e.append("<small>"+title+"</small>")
+        }
+        /**
+         * 月度出库额数据
+         * @param data
+         * @param e
+         * @param title
+         */
+        function monthDeliveryBulletin(data,e,title) {
+            if(data==undefined){
+                e.append("<h1 class='no-margins'>"+0+"</h1>");
+                e.append("<div class='stat-percent font-bold text-success'>上月收入:0 <i class='fa fa-bolt'></i></div>");
+                e.append("<small>"+title+"</small>")
+                return;
+            }
+            e.append("<h1 class='no-margins'>"+empty(data.deliveryPrice)+"</h1>");
+            switch (empty(data.msgType)) {
+                case 0:
+                    //上
+                    e.append("<div class='stat-percent font-bold text-navy'>"+"上月收入:"+empty(data.lastDeliveryPrice)+"<i class='fa fa-level-up'></i></div>");
+                    break;
+                case 1:
+                    //下
+                    e.append("<div class='stat-percent font-bold text-danger'>"+"上月收入:"+empty(data.lastDeliveryPrice)+"<i class='fa fa-level-down'></i></div>");
+                    break;
+                case 2:
+                    e.append("<div class='stat-percent font-bold text-success'>"+"上月收入:"+empty(data.lastDeliveryPrice)+"<i class='fa fa-bolt'></i></div>");
+                    break;
+            }
+            e.append("<small>"+title+"</small>")
+        }
+        /**
+         * 出入库次数汇总
+         * @param data
+         * @param e
+         * @param title
+         */
+        function thisMonthCount(data,e,title) {
+            if(data==undefined){
+                e.append("<h1 class='no-margins'>"+0+"</h1>");
+                e.append("<div class='stat-percent font-bold text-success'>0% <i class='fa fa-bolt'></i></div>");
+                e.append("<small>"+title+"</small>")
+                return;
+            }
+            e.append("<h1 class='no-margins'>"+empty(data.thisMonth)+"</h1>");
+            var type=empty(parseInt(data.thisMonth)-parseInt(data.lastMonth))
+            if(type>0) {
+                e.append("<div class='stat-percent font-bold text-navy'>" + "上月出入库次数:" + empty(data.lastMonth) + "<i class='fa fa-level-up'></i></div>");
+            }else if(type==0){
+                e.append("<div class='stat-percent font-bold text-success'>"+"上月出入库次数:"+empty(data.lastMonth)+"<i class='fa fa-bolt'></i></div>");
+
+            }else {
+                e.append("<div class='stat-percent font-bold text-danger'>"+"上月出入库次数:"+empty(data.lastMonth)+"<i class='fa fa-level-down'></i></div>");
+
+            }
+            e.append("<small>"+title+"</small>")
+
+
+        }
+        function empty(value) {
+            if(value==undefined|value==null){
+            return ''
+            }else {
+                return value
+            }
+        }
+
+        /**
+         * 获取最新出入库十条数据
+         */
+        function getNews() {
+            $.ajax({
+                url:ctx+'materialsDetailBusiness/materialsDetailBusiness/newTenPut',
+                dataType:'json',
+                success:function (res) {
+                    draw(res)
+                }
+        })
+        }
+        function draw(data) {
+            // if(empty(data)){return;}
+            var put=$("#put")
+            var delivery=$("#delivery")
+            var reback=$("#reback")
+            $.each(data,function () {
+                if(this.type==1){
+                    put.append('<tr>' +
+                        '<td><small>'+getType(this.type)+'</small></td>' +
+                        '<td>'+this.tbmaterials.name+'</td>' +
+                        '<td>'+this.tbmaterials.putPrice*this.amount+'</td>' +
+                        '<td>'+getDate(this.createTime)+'</td>' +
+                        '</tr>')
+                }
+                else  if(this.type==2){
+                    delivery.append('<tr>' +
+                        '<td><small>'+getType(this.type)+'</small></td>' +
+                        '<td>'+this.tbmaterials.name+'</td>' +
+                        '<td>'+this.tbmaterials.deliveryPrice*this.amount+'</td>' +
+                        '<td>'+getDate(this.createTime)+'</td>' +
+                        '</tr>')
+                }
+            })
+        }
+        function getType(type) {
+            if(type==1){
+            return'入库'
+            }else if(type==2)
+            {
+                return '出库'
+            }else {
+                return '退回'
+            }
+
+        }
+        function getDate(date) {
+            var now=new Date(date)
+            return now.getFullYear()+"-"+now.getMonth()+"-"+now.getDay()+" "+now.getHours()+":"+now.getMinutes();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mi.bill.mapper.TbBillMapper">
+    
+    <resultMap type="TbBill" id="TbBillResult">
+        <result property="id"    column="ID"    />
+        <result property="detailId"    column="detail_id"    />
+        <result property="type"    column="type"    />
+        <result property="materialsName"    column="materials_name"    />
+        <result property="acoumt"    column="acoumt"    />
+        <result property="handler"    column="handler"    />
+        <result property="money"    column="money"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectTbBillVo">
+        select ID, detail_id, type, materials_name, acoumt, handler, money, update_time, create_time from tb_bill
+    </sql>
+
+    <select id="selectTbBillList" parameterType="TbBill" resultMap="TbBillResult">
+        <include refid="selectTbBillVo"/>
+        <where>  
+            <if test="detailId != null "> and detail_id = #{detailId}</if>
+            <if test="type != null "> and type = #{type}</if>
+            <if test="materialsName != null  and materialsName != ''"> and materials_name like concat('%', #{materialsName}, '%')</if>
+            <if test="handler != null  and handler != ''"> and handler = #{handler}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbBillById" parameterType="Long" resultMap="TbBillResult">
+        <include refid="selectTbBillVo"/>
+        where ID = #{id}
+    </select>
+        
+    <insert id="insertTbBill" parameterType="TbBill" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_bill
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="detailId != null ">detail_id,</if>
+            <if test="type != null ">type,</if>
+            <if test="materialsName != null  and materialsName != ''">materials_name,</if>
+            <if test="acoumt != null ">acoumt,</if>
+            <if test="handler != null  and handler != ''">handler,</if>
+            <if test="money != null ">money,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="createTime != null ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="detailId != null ">#{detailId},</if>
+            <if test="type != null ">#{type},</if>
+            <if test="materialsName != null  and materialsName != ''">#{materialsName},</if>
+            <if test="acoumt != null ">#{acoumt},</if>
+            <if test="handler != null  and handler != ''">#{handler},</if>
+            <if test="money != null ">#{money},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="createTime != null ">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbBill" parameterType="TbBill">
+        update tb_bill
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="detailId != null ">detail_id = #{detailId},</if>
+            <if test="type != null ">type = #{type},</if>
+            <if test="materialsName != null  and materialsName != ''">materials_name = #{materialsName},</if>
+            <if test="acoumt != null ">acoumt = #{acoumt},</if>
+            <if test="handler != null  and handler != ''">handler = #{handler},</if>
+            <if test="money != null ">money = #{money},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteTbBillById" parameterType="Long">
+        delete from tb_bill where ID = #{id}
+    </delete>
+
+    <delete id="deleteTbBillByIds" parameterType="String">
+        delete from tb_bill where ID in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

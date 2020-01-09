@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mi.requirementsPlan.mapper.TbRequirementsPlanMapper">
+    
+    <resultMap type="TbRequirementsPlan" id="TbRequirementsPlanResult">
+        <result property="id"    column="id"    />
+        <result property="materialsId"    column="materials_id"    />
+        <result property="title"    column="title"    />
+        <result property="amount"    column="amount"    />
+        <result property="status"    column="status"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectTbRequirementsPlanVo">
+        select id, materials_id, title, amount, status, update_time, create_time from tb_requirements_plan
+    </sql>
+
+    <select id="selectTbRequirementsPlanList" parameterType="TbRequirementsPlan" resultMap="TbRequirementsPlanResult">
+        <include refid="selectTbRequirementsPlanVo"/>
+        <where>  
+            <if test="materialsId != null "> and materials_id = #{materialsId}</if>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbRequirementsPlanById" parameterType="Integer" resultMap="TbRequirementsPlanResult">
+        <include refid="selectTbRequirementsPlanVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTbRequirementsPlan" parameterType="TbRequirementsPlan" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_requirements_plan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="materialsId != null ">materials_id,</if>
+            <if test="title != null  and title != ''">title,</if>
+            <if test="amount != null ">amount,</if>
+            <if test="status != null ">status,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="createTime != null ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="materialsId != null ">#{materialsId},</if>
+            <if test="title != null  and title != ''">#{title},</if>
+            <if test="amount != null ">#{amount},</if>
+            <if test="status != null ">#{status},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="createTime != null ">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbRequirementsPlan" parameterType="TbRequirementsPlan">
+        update tb_requirements_plan
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="materialsId != null ">materials_id = #{materialsId},</if>
+            <if test="title != null  and title != ''">title = #{title},</if>
+            <if test="amount != null ">amount = #{amount},</if>
+            <if test="status != null ">status = #{status},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTbRequirementsPlanById" parameterType="Integer">
+        delete from tb_requirements_plan where id = #{id}
+    </delete>
+
+    <delete id="deleteTbRequirementsPlanByIds" parameterType="String">
+        delete from tb_requirements_plan where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

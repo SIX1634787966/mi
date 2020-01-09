@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改采购计划')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-tbPurchaseBusiness-edit" th:object="${tbPurchase}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">采购员：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text"    onclick="selectUserTree()" id="UserName" name="userName" th:field="*{buyer.userName}"  readonly="true"  required>
+                        <span class="input-group-addon" ><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">采购员编号：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text" th:field="*{userId}"   id="UserId" name="UserId" readonly="true"  required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">需求计划：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text" th:field="*{tbRequirementsPlan.title}" onclick="selectPlanTree()" id="planName" name="planName" readonly="true"  required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">需求计划编号：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text"  th:field="*{tbRequirementsPlan.id}" id="planId" name="planId" readonly="true"  required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">紧急：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('tb_purchase_exigency')}">
+                        <input type="radio" th:id="${'exigency_' + dict.dictCode}" name="exigency" th:value="${dict.dictValue}" th:field="*{exigency}" required>
+                        <label th:for="${'exigency_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">状态：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('tb_purchase_status')}">
+                        <input type="radio" th:id="${'status_' + dict.dictCode}" name="status" th:value="${dict.dictValue}" th:field="*{status}" required>
+                        <label th:for="${'status_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="form-group">-->
+                <!--<label class="col-sm-3 control-label">支付状态：</label>-->
+                <!--<div class="col-sm-8">-->
+                    <!--<div class="radio-box" th:each="dict : ${@dict.getType('tb_purchase_payment_state')}">-->
+                        <!--<input type="radio" th:id="${'paymentState_' + dict.dictCode}" name="paymentState" th:value="${dict.dictValue}" th:field="*{paymentState}" required>-->
+                        <!--<label th:for="${'paymentState_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "tbPurchaseBusiness/tbPurchaseBusiness";
+        $("#form-tbPurchaseBusiness-edit").validate({
+            onkeyup: false,
+            rules:{
+                amount:{
+                    number:true,
+                    digits:true,
+                    min:1
+                }
+            },
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-tbPurchaseBusiness-edit').serialize());
+            }
+        }
+        /*采购员管理-新增-选择菜单树*/
+        function selectUserTree() {
+            //  var menuId = treeId > 0 ? treeId : 1;
+            var url = prefix + "/userTree"
+            var options = {
+                title: '采购员选择',
+                width: "380",
+                url: url,
+                callBack: UserDoSubmit
+            };
+            $.modal.openOptions(options);
+        }
+        function UserDoSubmit(index, layero){
+            var body = layer.getChildFrame('body', index);
+            $("#UserId").val(body.find('#treeId').val());
+            $("#UserName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+        /*物资管理-新增-选择菜单树*/
+        function selectMaterialsTree() {
+            //  var menuId = treeId > 0 ? treeId : 1;
+            var url = prefix + "/materialsTree"
+            var options = {
+                title: '物资选择',
+                width: "380",
+                url: url,
+                callBack: materialsDoSubmit
+            };
+            $.modal.openOptions(options);
+        }
+        function materialsDoSubmit(index, layero){
+            var body = layer.getChildFrame('body', index);
+            $("#materialsId").val(body.find('#treeId').val());
+            $("#materialsName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+        /*供应商管理-新增-选择菜单树*/
+        function selectSupplierTree() {
+            //  var menuId = treeId > 0 ? treeId : 1;
+            var url = prefix + "/supplierTree"
+            var options = {
+                title: '供应商选择',
+                width: "380",
+                url: url,
+                callBack: supplierDoSubmit
+            };
+            $.modal.openOptions(options);
+        }
+        function supplierDoSubmit(index, layero){
+            var body = layer.getChildFrame('body', index);
+            $("#supplierId").val(body.find('#treeId').val());
+            $("#supplierName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+        /*需求计划管理-新增-选择菜单树*/
+        function selectPlanTree() {
+            //  var menuId = treeId > 0 ? treeId : 1;
+            var url = ctx+"requirementsPlan/requirementsPlan/requirementsPlanTree"
+            var options = {
+                title: '需求计划选择',
+                width: "380",
+                url: url,
+                callBack: planDoSubmit
+            };
+            $.modal.openOptions(options);
+        }
+        function planDoSubmit(index, layero){
+            var body = layer.getChildFrame('body', index);
+            $("#planId").val(body.find('#treeId').val());
+            $("#planName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+    </script>
+</body>
+</html>

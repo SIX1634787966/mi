@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('物资出库')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-materialsDetailBusiness-add">
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">物资名称：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text"  id="materialsName" name="materialsName" onclick="selectMaterialsTree()" readonly="true"  required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">物资编号：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text"  id="materialsId" name="materialsId" readonly="true"  required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">数量：</label>
+                <div class="col-sm-8">
+                    <input id="amount" name="amount" readonly="readonly" class="form-control" type="text" required>
+                </div>
+            </div>
+            <input type="hidden" name="type" value="2"/>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "materialsDetailBusiness/materialsDetailBusiness"
+        $("#form-materialsDetailBusiness-add").validate({
+            onkeyup: false,
+            rules:{
+                amount:{
+                    number:true,
+                    digits:true,
+                    min:1,
+                    remote: {
+                        url: prefix + "/checkAmount",
+                        type: "post",
+                        dataType: "json",
+                        data: {
+                            amount : function() {
+                                return $.common.trim($("#amount").val());
+                            },
+                            materialsId:function () {
+                                return $.common.trim($("#materialsId").val());
+                            }
+                        },
+                        dataFilter: function(data, type) {
+                            return data;
+                        }
+                    }
+
+                },
+            },
+            messages:{
+                "amount":{
+                    remote: "库存不足",
+                    min:"不能小于1",
+                    digits:"请输入整数"
+                }
+            }
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-materialsDetailBusiness-add').serialize());
+            }
+        }
+        /*物资管理-新增-选择菜单树*/
+        function selectMaterialsTree() {
+            var url = ctx + "tbPurchaseBusiness/tbPurchaseBusiness" + "/materialsTree"
+            var options = {
+                title: '物资选择',
+                width: "380",
+                url: url,
+                callBack: materialsDoSubmit
+            };
+            $.modal.openOptions(options);
+        }
+        function materialsDoSubmit(index, layero){
+            var body = layer.getChildFrame('body', index);
+            $("#amount").removeAttr("readonly")
+            $("#materialsId").val(body.find('#treeId').val());
+            $("#materialsName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+    </script>
+</body>
+</html>

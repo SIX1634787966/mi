@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改需求计划')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-requirementsPlan-edit" th:object="${tbRequirementsPlan}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">物资名称：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text" th:field="*{tbmaterials.name}" onclick="selectMaterialsTree()"  id="materialsName" name="materialsName" readonly="true"  required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">物资编号：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input class="form-control" type="text" th:field="*{materialsId}"  id="materialsId" name="materialsId" readonly="true"  required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">标题：</label>
+                <div class="col-sm-8">
+                    <input name="title" th:field="*{title}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">需求数量：</label>
+                <div class="col-sm-8">
+                    <input name="amount" th:field="*{amount}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">状态：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('tb_requirements_plan_status')}">
+                        <input type="radio" th:id="${'status_' + dict.dictCode}" name="status" th:value="${dict.dictValue}" th:field="*{status}" required>
+                        <label th:for="${'status_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "requirementsPlan/requirementsPlan";
+        $("#form-requirementsPlan-edit").validate({
+            onkeyup: false,
+            rules:{
+                amount:{
+                    number:true,
+                    min:0,
+                    digits:true
+                },
+            },
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-requirementsPlan-edit').serialize());
+            }
+        }
+        /*物资管理-新增-选择菜单树*/
+        function selectMaterialsTree() {
+            //  var menuId = treeId > 0 ? treeId : 1;
+            var url = ctx + "tbPurchaseBusiness/tbPurchaseBusiness" + "/materialsTree"
+            var options = {
+                title: '物资选择',
+                width: "380",
+                url: url,
+                callBack: materialsDoSubmit
+            };
+            $.modal.openOptions(options);
+        }
+        function materialsDoSubmit(index, layero){
+            var body = layer.getChildFrame('body', index);
+            $("#materialsId").val(body.find('#treeId').val());
+            $("#materialsName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+    </script>
+</body>
+</html>

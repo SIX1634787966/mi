@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增统计')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-statistics-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">业务类型：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('tb_statistics_business_type')}">
+                        <input type="radio" th:id="${'businessType_' + dict.dictCode}" name="businessType" th:value="${dict.dictValue}" th:checked="${dict.default}">
+                        <label th:for="${'businessType_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">开始时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="beginTime" class="form-control" placeholder="yyyy-MM-dd" type="text" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">结束时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="endTime" class="form-control" placeholder="yyyy-MM-dd" type="text" required>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "statistics/statistics"
+        $("#form-statistics-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-statistics-add').serialize());
+            }
+        }
+
+        $("input[name='beginTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        $("input[name='endTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mi.warehouseBusiness.mapper.TbWarehouseMapper">
+    
+    <resultMap type="TbWarehouse" id="TbWarehouseResult">
+        <result property="id"    column="ID"    />
+        <result property="name"    column="name"    />
+        <result property="phone"    column="phone"    />
+        <result property="address"    column="address"    />
+        <result property="president"    column="president"    />
+        <result property="email"    column="email"    />
+        <result property="status"    column="status"    />
+        <result property="area"    column="area"    />
+        <result property="isfull"    column="isFull"    />
+        <result property="remark"    column="remark"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectTbWarehouseVo">
+        select ID, name, phone, address, president, email, status, area, isFull, remark, update_time, create_time from tb_warehouse
+    </sql>
+    <select id="selectTbWarehouseTree"  resultMap="TbWarehouseResult">
+ select ID, name from tb_warehouse where status=0 and isFull=0
+    </select>
+    <select id="selectTbWarehouseList" parameterType="TbWarehouse" resultMap="TbWarehouseResult">
+        <include refid="selectTbWarehouseVo"/>
+        <where>  
+            <if test="id != null "> and ID = #{id}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="president != null  and president != ''"> and president = #{president}</if>
+            <if test="email != null  and email != ''"> and email = #{email}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="isfull != null "> and isFull = #{isfull}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+        </where>
+        group by id desc
+    </select>
+    
+    <select id="selectTbWarehouseById" parameterType="Integer" resultMap="TbWarehouseResult">
+        <include refid="selectTbWarehouseVo"/>
+        where ID = #{id}
+    </select>
+        
+    <insert id="insertTbWarehouse" parameterType="TbWarehouse" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_warehouse
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null  and name != ''">name,</if>
+            <if test="phone != null  and phone != ''">phone,</if>
+            <if test="address != null  and address != ''">address,</if>
+            <if test="president != null  and president != ''">president,</if>
+            <if test="email != null  and email != ''">email,</if>
+            <if test="status != null ">status,</if>
+            <if test="area != null ">area,</if>
+            <if test="isfull != null ">isFull,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="createTime != null ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="phone != null  and phone != ''">#{phone},</if>
+            <if test="address != null  and address != ''">#{address},</if>
+            <if test="president != null  and president != ''">#{president},</if>
+            <if test="email != null  and email != ''">#{email},</if>
+            <if test="status != null ">#{status},</if>
+            <if test="area != null ">#{area},</if>
+            <if test="isfull != null ">#{isfull},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="createTime != null ">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbWarehouse" parameterType="TbWarehouse">
+        update tb_warehouse
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="phone != null  and phone != ''">phone = #{phone},</if>
+            <if test="address != null  and address != ''">address = #{address},</if>
+            <if test="president != null  and president != ''">president = #{president},</if>
+            <if test="email != null  and email != ''">email = #{email},</if>
+            <if test="status != null ">status = #{status},</if>
+            <if test="area != null ">area = #{area},</if>
+            <if test="isfull != null ">isFull = #{isfull},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteTbWarehouseById" parameterType="Integer">
+        delete from tb_warehouse where ID = #{id}
+    </delete>
+
+    <delete id="deleteTbWarehouseByIds" parameterType="String">
+        delete from tb_warehouse where ID in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

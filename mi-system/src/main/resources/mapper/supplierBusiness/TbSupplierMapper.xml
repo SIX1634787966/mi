@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mi.supplierBusiness.mapper.TbSupplierMapper">
+    
+    <resultMap type="TbSupplier" id="TbSupplierResult">
+        <result property="id"    column="id"    />
+        <result property="brand"    column="brand"    />
+        <result property="president"    column="president"    />
+        <result property="phone"    column="phone"    />
+        <result property="email"    column="email"    />
+        <result property="address"    column="address"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectTbSupplierVo">
+        select id, brand, president, phone, email, address, update_time, create_time from tb_supplier
+    </sql>
+    <select id="selectTbSupplierTree"  resultMap="TbSupplierResult">
+        select id, brand from tb_supplier
+    </select>
+    <select id="selectTbSupplierList" parameterType="TbSupplier" resultMap="TbSupplierResult">
+        <include refid="selectTbSupplierVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+            <if test="brand != null  and brand != ''"> and brand like concat('%', #{brand}, '%')</if>
+            <if test="president != null  and president != ''"> and president like concat('%', #{president}, '%')</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="email != null  and email != ''"> and email = #{email}</if>
+            <if test="address != null  and address != ''"> and address like concat('%', #{address}, '%')</if>
+        </where>
+        group by id desc
+    </select>
+    <select id="selectTbSupplierByMaterialsId" parameterType="Integer" resultMap="TbSupplierResult">
+        select tb_supplier.id as id,tb_supplier.brand as brand from tb_supplier,tb_materials where tb_materials.supplier_id=tb_supplier.id and  tb_materials.ID=#{0}
+    </select>
+    <select id="selectTbSupplierById" parameterType="Integer" resultMap="TbSupplierResult">
+        <include refid="selectTbSupplierVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTbSupplier" parameterType="TbSupplier" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_supplier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="brand != null  and brand != ''">brand,</if>
+            <if test="president != null  and president != ''">president,</if>
+            <if test="phone != null  and phone != ''">phone,</if>
+            <if test="email != null  and email != ''">email,</if>
+            <if test="address != null  and address != ''">address,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="createTime != null ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="brand != null  and brand != ''">#{brand},</if>
+            <if test="president != null  and president != ''">#{president},</if>
+            <if test="phone != null  and phone != ''">#{phone},</if>
+            <if test="email != null  and email != ''">#{email},</if>
+            <if test="address != null  and address != ''">#{address},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="createTime != null ">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbSupplier" parameterType="TbSupplier">
+        update tb_supplier
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="brand != null  and brand != ''">brand = #{brand},</if>
+            <if test="president != null  and president != ''">president = #{president},</if>
+            <if test="phone != null  and phone != ''">phone = #{phone},</if>
+            <if test="email != null  and email != ''">email = #{email},</if>
+            <if test="address != null  and address != ''">address = #{address},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTbSupplierById" parameterType="Integer">
+        delete from tb_supplier where id = #{id}
+    </delete>
+
+    <delete id="deleteTbSupplierByIds" parameterType="String">
+        delete from tb_supplier where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>
